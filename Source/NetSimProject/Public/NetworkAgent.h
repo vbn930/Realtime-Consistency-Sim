@@ -33,10 +33,14 @@ public:
 
 	void UpdateTargetLocation(const FEntitySnapshot& Snapshot);
 
+	float InterpolationDelay = 0.7f;
+
 private:
 	FVector TargetLocation;
 	FVector TargetVelocity;
 	FVector SimulatedVelocity;
+
+	bool bIsDeadReckoning = false;
 
 	FEntitySnapshot LastValidSnapshot;
 	TArray<FEntitySnapshot> SnapshotBuffer;

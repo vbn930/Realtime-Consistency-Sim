@@ -141,8 +141,6 @@ void AANetworkManager::ProcessIncomingPackets()
 				return;
 			}
 			else if (Snapshot->Header.Type == EPacketType::SNAPSHOT) {
-				UE_LOG(LogTemp, Warning, TEXT("[Recv] ID: %d, Pos: %s, Time: %f"),
-					Snapshot->Header.Type, *Snapshot->Position.ToString(), Snapshot->ServerTimestamp);
 				
 				if (FMath::FRand() < SimulatedPacketLoss)
 				{
