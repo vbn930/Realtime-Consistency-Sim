@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\NetSimProject.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\NetSimProject.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\NetSimProjectEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.vsconfig" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\NetSimProject">
+      <UniqueIdentifier>{4198B992-C346-3D7B-AFE1-A6597E5590B4}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\NetSimProject\NetSimProject.Build.cs">
+      <Filter>Source\NetSimProject</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\NetSimProject\NetSimProject.cpp">
+      <Filter>Source\NetSimProject</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\NetSimProject.h">
+      <Filter>Source\NetSimProject</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\NetSimProjectCharacter.cpp">
+      <Filter>Source\NetSimProject</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\NetSimProjectCharacter.h">
+      <Filter>Source\NetSimProject</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\NetSimProjectGameMode.cpp">
+      <Filter>Source\NetSimProject</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\NetSimProjectGameMode.h">
+      <Filter>Source\NetSimProject</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\NetSimProjectPlayerController.cpp">
+      <Filter>Source\NetSimProject</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\NetSimProjectPlayerController.h">
+      <Filter>Source\NetSimProject</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Private">
+      <UniqueIdentifier>{DBA221E1-C1EF-349A-B71C-3563F0A3912F}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Private\ANetworkManager.cpp">
+      <Filter>Source\NetSimProject\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\NetSimProject\Private\NetworkAgent.cpp">
+      <Filter>Source\NetSimProject\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\NetSimProject\Private\NetworkProtocol.cpp">
+      <Filter>Source\NetSimProject\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\NetSimProject\Private\SimPlayerController.cpp">
+      <Filter>Source\NetSimProject\Private</Filter>
+    </ClCompile>
+    <Filter Include="Source\NetSimProject\Public">
+      <UniqueIdentifier>{C871E294-73AA-3A66-BCE8-1BDC0BC19858}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\NetSimProject\Public\ANetworkManager.h">
+      <Filter>Source\NetSimProject\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\NetSimProject\Public\NetworkAgent.h">
+      <Filter>Source\NetSimProject\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\NetSimProject\Public\NetworkProtocol.h">
+      <Filter>Source\NetSimProject\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\NetSimProject\Public\SimPlayerController.h">
+      <Filter>Source\NetSimProject\Public</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Combat">
+      <UniqueIdentifier>{3FF2FDE1-4E27-3E87-9C36-B32B58F85241}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\CombatCharacter.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\CombatCharacter.h">
+      <Filter>Source\NetSimProject\Variant_Combat</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\CombatGameMode.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\CombatGameMode.h">
+      <Filter>Source\NetSimProject\Variant_Combat</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\CombatPlayerController.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\CombatPlayerController.h">
+      <Filter>Source\NetSimProject\Variant_Combat</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Combat\AI">
+      <UniqueIdentifier>{053191F8-E6BC-3AFD-AE80-3B9BC5A1FEFA}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatAIController.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatAIController.h">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatEnemy.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatEnemy.h">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatEnemySpawner.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatEnemySpawner.h">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatStateTreeUtility.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\AI\CombatStateTreeUtility.h">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\AI\EnvQueryContext_Player.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\AI\EnvQueryContext_Player.h">
+      <Filter>Source\NetSimProject\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Combat\Animation">
+      <UniqueIdentifier>{FC8ECE0A-B4B4-3470-BC61-984B9E7D91B5}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Animation\AnimNotify_CheckChargedAttack.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Animation\AnimNotify_CheckChargedAttack.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Animation\AnimNotify_CheckCombo.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Animation\AnimNotify_CheckCombo.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Animation\AnimNotify_DoAttackTrace.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Animation\AnimNotify_DoAttackTrace.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Animation</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Combat\Gameplay">
+      <UniqueIdentifier>{A424C091-B613-365B-A5CD-635D264BBCDD}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatActivationVolume.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatActivationVolume.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatCheckpointVolume.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatCheckpointVolume.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatDamageableBox.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatDamageableBox.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatDummy.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatDummy.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatLavaFloor.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Gameplay\CombatLavaFloor.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Combat\Interfaces">
+      <UniqueIdentifier>{1F6E5F6F-2871-3520-BA48-C726A20D6C58}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Interfaces\CombatActivatable.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Interfaces\CombatActivatable.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Interfaces</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Interfaces\CombatAttacker.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Interfaces\CombatAttacker.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Interfaces</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\Interfaces\CombatDamageable.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\Interfaces\CombatDamageable.h">
+      <Filter>Source\NetSimProject\Variant_Combat\Interfaces</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Combat\UI">
+      <UniqueIdentifier>{FEBBB842-9C26-3F2C-A67A-2E289FEDC3FB}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Combat\UI\CombatLifeBar.cpp">
+      <Filter>Source\NetSimProject\Variant_Combat\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Combat\UI\CombatLifeBar.h">
+      <Filter>Source\NetSimProject\Variant_Combat\UI</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Platforming">
+      <UniqueIdentifier>{DA67D2E8-647F-3B60-A44C-FA8BDCE2A50B}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Platforming\PlatformingCharacter.cpp">
+      <Filter>Source\NetSimProject\Variant_Platforming</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Platforming\PlatformingCharacter.h">
+      <Filter>Source\NetSimProject\Variant_Platforming</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Platforming\PlatformingGameMode.cpp">
+      <Filter>Source\NetSimProject\Variant_Platforming</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Platforming\PlatformingGameMode.h">
+      <Filter>Source\NetSimProject\Variant_Platforming</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Platforming\PlatformingPlayerController.cpp">
+      <Filter>Source\NetSimProject\Variant_Platforming</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Platforming\PlatformingPlayerController.h">
+      <Filter>Source\NetSimProject\Variant_Platforming</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_Platforming\Animation">
+      <UniqueIdentifier>{C3636912-532C-3B57-98FD-3987E64853A7}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_Platforming\Animation\AnimNotify_EndDash.cpp">
+      <Filter>Source\NetSimProject\Variant_Platforming\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_Platforming\Animation\AnimNotify_EndDash.h">
+      <Filter>Source\NetSimProject\Variant_Platforming\Animation</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_SideScrolling">
+      <UniqueIdentifier>{9E5CDEC9-A00F-31B5-963F-8B303CD3F859}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingCameraManager.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingCameraManager.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingCharacter.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingCharacter.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingGameMode.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingGameMode.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingPlayerController.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\SideScrollingPlayerController.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_SideScrolling\AI">
+      <UniqueIdentifier>{9A7C5A1E-FA95-3AA7-A1E3-15B91C49890E}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\AI\SideScrollingAIController.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\AI\SideScrollingAIController.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\AI\SideScrollingNPC.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\AI\SideScrollingNPC.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\AI\SideScrollingStateTreeUtility.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\AI\SideScrollingStateTreeUtility.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\AI</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_SideScrolling\Gameplay">
+      <UniqueIdentifier>{36364C35-1BF7-36FD-8572-094CC23D269C}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingJumpPad.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingJumpPad.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingMovingPlatform.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingMovingPlatform.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingPickup.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingPickup.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingSoftPlatform.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\Gameplay\SideScrollingSoftPlatform.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_SideScrolling\Interfaces">
+      <UniqueIdentifier>{B1D8E518-CB79-37C9-8C6C-08408276E9F0}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\Interfaces\SideScrollingInteractable.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\Interfaces\SideScrollingInteractable.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\Interfaces</Filter>
+    </ClInclude>
+    <Filter Include="Source\NetSimProject\Variant_SideScrolling\UI">
+      <UniqueIdentifier>{F1B8DA23-A824-360F-98C4-ABD12EA9A9F0}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\NetSimProject\Variant_SideScrolling\UI\SideScrollingUI.cpp">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\NetSimProject\Variant_SideScrolling\UI\SideScrollingUI.h">
+      <Filter>Source\NetSimProject\Variant_SideScrolling\UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

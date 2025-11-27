@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "NetSimProject",
+			"Path": "..\\Source\\NetSimProject.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "NetSimProjectEditor",
+			"Path": "..\\Source\\NetSimProjectEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
