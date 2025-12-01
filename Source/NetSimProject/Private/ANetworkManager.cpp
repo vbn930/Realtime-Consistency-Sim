@@ -145,7 +145,7 @@ void AANetworkManager::ProcessIncomingPackets()
 				if (FMath::FRand() < SimulatedPacketLoss)
 				{
 					// Simulate Packet loss
-					UE_LOG(LogTemp, Verbose, TEXT("Packet Lost Simulated!"));
+					UE_LOG(LogTemp, Warning, TEXT("Packet Lost Simulated!"));
 					continue;
 				}
 
@@ -248,17 +248,16 @@ void AANetworkManager::RunServerSimulation(float DeltaTime)
 {
 	UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
-	if (NavSystem) {
+	if (NavSystem && Agent)
+	{
 		FVector CurrentPos = Agent->GetActorLocation();
 
 		if (CurrentPathPoints.Num() == 0 || PathPointIndex >= CurrentPathPoints.Num()) {
-			// Get path from current agent postion to vaild random point
 
 			float Radius = PathfindingRadius;
 			bool isFoundPath = false;
 			while (!isFoundPath) {
 				FNavLocation RandomLocation = GetVaildRandomLocation(CurrentPos, Radius);
-
 				CalculateNavPath(CurrentPos, RandomLocation);
 
 				if (CurrentPathPoints.Num()) {
@@ -271,10 +270,16 @@ void AANetworkManager::RunServerSimulation(float DeltaTime)
 		FVector Direction = (TargetPoint - CurrentPos).GetSafeNormal();
 		float Speed = 600.0f;
 		FVector CurrentVelocity = Direction * Speed;
-
 		FVector NewPos = CurrentPos + (CurrentVelocity * DeltaTime);
 
-		if (FVector::Dist(CurrentPos, TargetPoint) < 50.0f)
+		FNavLocation ProjectedLocation;
+
+		if (NavSystem->ProjectPointToNavigation(NewPos, ProjectedLocation, FVector(500.0f, 500.0f, 500.0f)))
+		{
+			NewPos.Z = ProjectedLocation.Location.Z;
+		}
+
+		if (FVector::Dist(CurrentPos, TargetPoint) < 100.0f)
 		{
 			PathPointIndex++;
 		}

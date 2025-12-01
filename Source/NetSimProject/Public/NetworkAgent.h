@@ -1,5 +1,4 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -28,6 +27,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+
+	UFUNCTION(BlueprintPure, Category = "Network Status")
+	int32 GetCurrentAlgorithmState() const;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Network Simulation")
 	bool bIsEnablePrediction = false;
 
@@ -39,6 +42,9 @@ private:
 	FVector TargetLocation;
 	FVector TargetVelocity;
 	FVector SimulatedVelocity;
+
+	float ClientServerTimeDelta = 0.0f;
+	bool bHasSynchronizedTime = false;
 
 	bool bIsDeadReckoning = false;
 

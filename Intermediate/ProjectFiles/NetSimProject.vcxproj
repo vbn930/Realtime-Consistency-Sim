@@ -252,7 +252,10 @@
     <None Include="..\..\NetSimProject.uproject"/>
     <None Include="..\..\Source\NetSimProject.Target.cs"/>
     <None Include="..\..\Source\NetSimProjectEditor.Target.cs"/>
+    <None Include="..\..\.gitattributes"/>
+    <None Include="..\..\.gitignore"/>
     <None Include="..\..\.vsconfig"/>
+    <None Include="..\..\LICENSE.txt"/>
     <None Include="..\..\Config\DefaultEditor.ini"/>
     <None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini"/>
     <None Include="..\..\Config\DefaultEngine.ini"/>
