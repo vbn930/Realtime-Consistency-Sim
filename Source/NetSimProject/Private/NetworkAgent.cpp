@@ -3,6 +3,8 @@
 
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ANetworkManager.h"
 
 // Sets default values
 ANetworkAgent::ANetworkAgent()
@@ -24,7 +26,11 @@ ANetworkAgent::ANetworkAgent()
 void ANetworkAgent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+void ANetworkAgent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -32,71 +38,110 @@ void ANetworkAgent::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (!bIsEnablePrediction) return;
+    bool bShouldMove = false;
 
-    if (!bHasSynchronizedTime) return;
-
-    float CurrentClientTime = GetWorld()->GetTimeSeconds();
-    float EstimatedServerTime = CurrentClientTime + ClientServerTimeDelta;
-    float RenderTime = EstimatedServerTime - InterpolationDelay;
-
-    FVector NewLocation = GetActorLocation();
-    FVector NewVelocity = FVector::ZeroVector;
-    bool bFoundInterpolation = false;
-
-    float MaxInterpGap = 0.5f;
-
-    // Interpolation
-    for (int32 i = 0; i < SnapshotBuffer.Num() - 1; i++)
+    if (bIsEnablePrediction && bHasSynchronizedTime)
     {
-        const FEntitySnapshot& Start = SnapshotBuffer[i];
-        const FEntitySnapshot& End = SnapshotBuffer[i + 1];
-
-        if (Start.ServerTimestamp <= RenderTime && End.ServerTimestamp > RenderTime)
+        if (SnapshotBuffer.Num() > 0)
         {
-            float TimeGap = End.ServerTimestamp - Start.ServerTimestamp;
-            if (TimeGap > MaxInterpGap)
-            {
-                break;
-            }
-
-            float Alpha = 0.0f;
-            if (TimeGap > KINDA_SMALL_NUMBER)
-            {
-                Alpha = (RenderTime - Start.ServerTimestamp) / TimeGap;
-            }
-
-            NewLocation = FMath::Lerp(Start.Position, End.Position, Alpha);
-            NewVelocity = FMath::Lerp(Start.Velocity, End.Velocity, Alpha);
-
-            bFoundInterpolation = true;
-            bIsDeadReckoning = false;
-            break;
+            bShouldMove = true;
         }
     }
 
-    // Dead Reckoning
-    if (!bFoundInterpolation && LastValidSnapshot.ServerTimestamp > 0.0f)
+    if (bShouldMove)
     {
-        bIsDeadReckoning = true;
+        float CurrentClientTime = GetWorld()->GetTimeSeconds();
+        float EstimatedServerTime = CurrentClientTime + ClientServerTimeDelta;
+        float RenderTime = EstimatedServerTime - InterpolationDelay;
 
-        float TimeSinceLast = RenderTime - LastValidSnapshot.ServerTimestamp;
-
-        if (TimeSinceLast > 0)
+        if (SnapshotBuffer[0].ServerTimestamp > RenderTime)
         {
-            FVector PredictedPos = LastValidSnapshot.Position + (LastValidSnapshot.Velocity * TimeSinceLast);
-            NewLocation = FMath::VInterpTo(GetActorLocation(), PredictedPos, DeltaTime, 15.0f);
-            NewVelocity = LastValidSnapshot.Velocity;
+            FVector StartPos = SnapshotBuffer[0].Position;
+            FVector SmoothPos = FMath::VInterpTo(GetActorLocation(), StartPos, DeltaTime, 10.0f);
+            SetActorLocation(SmoothPos);
+
+            bShouldMove = false;
+        }
+        else
+        {
+            FVector NewLocation = GetActorLocation();
+            FVector NewVelocity = FVector::ZeroVector;
+            bool bFoundInterpolation = false;
+            float MaxInterpGap = 0.5f;
+
+            FEntitySnapshot DRSnapshot = LastValidSnapshot;
+
+            // Interpolation
+            for (int32 i = 0; i < SnapshotBuffer.Num() - 1; i++)
+            {
+                const FEntitySnapshot& Start = SnapshotBuffer[i];
+                const FEntitySnapshot& End = SnapshotBuffer[i + 1];
+
+                if (Start.ServerTimestamp <= RenderTime && End.ServerTimestamp > RenderTime)
+                {
+                    float TimeGap = End.ServerTimestamp - Start.ServerTimestamp;
+                    if (TimeGap > MaxInterpGap)
+                    {
+                        DRSnapshot = Start;
+                        break;
+                    }
+
+                    float Alpha = 0.0f;
+                    if (TimeGap > KINDA_SMALL_NUMBER)
+                    {
+                        Alpha = (RenderTime - Start.ServerTimestamp) / TimeGap;
+                    }
+
+                    NewLocation = FMath::Lerp(Start.Position, End.Position, Alpha);
+                    NewVelocity = FMath::Lerp(Start.Velocity, End.Velocity, Alpha);
+
+                    bFoundInterpolation = true;
+                    bIsDeadReckoning = false;
+                    break;
+                }
+            }
+
+            // Dead Reckoning
+            if (!bFoundInterpolation && DRSnapshot.ServerTimestamp > 0.0f)
+            {
+                bIsDeadReckoning = true;
+                float TimeSinceLast = RenderTime - DRSnapshot.ServerTimestamp;
+
+                if (TimeSinceLast > 0)
+                {
+                    FVector PredictedPos = DRSnapshot.Position + (DRSnapshot.Velocity * TimeSinceLast);
+
+                    NewLocation = FMath::VInterpTo(GetActorLocation(), PredictedPos, DeltaTime, 15.0f);
+                    NewVelocity = DRSnapshot.Velocity;
+                }
+            }
+
+            SetActorLocation(NewLocation);
+            GetCharacterMovement()->Velocity = NewVelocity;
         }
     }
 
-    SetActorLocation(NewLocation);
-    GetCharacterMovement()->Velocity = NewVelocity;
+	// Data saving for Experiment
+    if (bIsRecording)
+    {
+        float CurrentClientTime = GetWorld()->GetTimeSeconds();
+        FVector CurrentPos = GetActorLocation();
+        FVector CurrentVel = GetCharacterMovement()->Velocity;
 
-	// Save experiment data
-    int32 AlgoState = GetCurrentAlgorithmState();
-    AddExperimentDataToBuffer(CurrentClientTime, RealTimeServerSnapshot.Position, NewLocation,
-		RealTimeServerSnapshot.ServerTimestamp, RealTimeServerSnapshot.Velocity, NewVelocity, AlgoState);
+        int32 AlgoState = GetCurrentAlgorithmState();
+
+        AddExperimentDataToBuffer(
+            CurrentClientTime,
+            RealTimeServerSnapshot.Position,
+            CurrentPos,
+            RealTimeServerSnapshot.ServerTimestamp,
+            RealTimeServerSnapshot.Velocity,
+            CurrentVel,
+            AlgoState
+        );
+
+        CurrentRecordingTime = GetWorld()->GetTimeSeconds() - RecordingStartTime;
+    }
 }
 
 // Called to bind functionality to input
@@ -113,6 +158,29 @@ int32 ANetworkAgent::GetCurrentAlgorithmState() const
     if (bIsDeadReckoning) return 2; // Dead Reckoning
 
     return 1; // Interpolation
+}
+
+void ANetworkAgent::StartExperimentRecording()
+{
+    if (bIsRecording) return;
+
+    ExperimentDataBuffer.Empty();
+    bIsRecording = true;
+
+    RecordingStartTime = GetWorld()->GetTimeSeconds();
+    CurrentRecordingTime = 0.0f;
+
+    UE_LOG(LogTemp, Warning, TEXT("=== Experiment Recording STARTED ==="));
+}
+
+void ANetworkAgent::StopExperimentRecording()
+{
+    if (!bIsRecording) return;
+
+    bIsRecording = false;
+    SaveExperimentData();
+
+    UE_LOG(LogTemp, Warning, TEXT("=== Experiment Recording STOPPED & SAVED ==="));
 }
 
 void ANetworkAgent::UpdateTargetLocation(const FEntitySnapshot& Snapshot)
@@ -174,22 +242,41 @@ void ANetworkAgent::SaveExperimentData()
 {
     if (ExperimentDataBuffer.Num() == 0) return;
 
-    // 1. CSV 헤더 만들기 (엑셀 맨 윗줄)
-    FString FinalOutput = TEXT("Time,ServerX,ServerY,ClientX,ClientY,Error,ServerTime,ServerVelX,ServerVelY,ClientVelX,ClientVelY,State\n");
+    // 1. NetworkManager 찾아서 설정값 가져오기
+    float CurrentLatency = 0.0f;
+    float CurrentLoss = 0.0f;
 
-    // 2. 버퍼 내용을 하나의 긴 문자열로 합치기
-    for (const FString& Line : ExperimentDataBuffer)
+    // 월드에 있는 NetworkManager를 찾습니다.
+    AANetworkManager* NetMgr = Cast<AANetworkManager>(
+        UGameplayStatics::GetActorOfClass(GetWorld(), AANetworkManager::StaticClass())
+    );
+
+    if (NetMgr)
     {
-        FinalOutput += Line + TEXT("\n"); // 줄바꿈 추가
+        CurrentLatency = NetMgr->SimulatedLatency * 1000.0f;
+        CurrentLoss = NetMgr->SimulatedPacketLoss * 100.0f;
     }
 
-    // 3. 파일명 생성 (날짜_시간.csv) -> 덮어쓰기 방지
-    FString FileName = FString::Printf(TEXT("Experiment_%s.csv"), *FDateTime::Now().ToString(TEXT("%Y%m%d_%H%M%S")));
+    FString PredStatus = bIsEnablePrediction ? TEXT("ON") : TEXT("OFF");
 
-    // 4. 저장 경로: 프로젝트폴더/Saved/Logs/ 안에 저장
+    FString TimeStr = FDateTime::Now().ToString(TEXT("%Y%m%d_%H%M%S"));
+
+    FString FileName = FString::Printf(TEXT("Exp_Lat%.0f_Loss%.0f_%s_%s.csv"),
+        CurrentLatency,
+        CurrentLoss,
+        *PredStatus,
+        *TimeStr
+    );
+
+    FString FinalOutput = TEXT("Time,ServerX,ServerY,ClientX,ClientY,Error,ServerTime,ServerVelX,ServerVelY,ClientVelX,ClientVelY,State\n");
+
+    for (const FString& Line : ExperimentDataBuffer)
+    {
+        FinalOutput += Line + TEXT("\n"); 
+    }
+
     FString FilePath = FPaths::ProjectSavedDir() + "Logs/" + FileName;
 
-    // 5. 실제 쓰기 수행
     if (FFileHelper::SaveStringToFile(FinalOutput, *FilePath))
     {
         UE_LOG(LogTemp, Warning, TEXT("=== Experiment Data Saved: %s ==="), *FilePath);

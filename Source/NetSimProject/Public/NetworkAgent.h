@@ -35,6 +35,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Network Simulation")
 	bool bIsEnablePrediction = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Experiment")
+	bool bIsRecording = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Experiment")
+	float CurrentRecordingTime = 0.0f;
+
+	UFUNCTION(BlueprintCallable, Category = "Experiment")
+	void StartExperimentRecording();
+
+	UFUNCTION(BlueprintCallable, Category = "Experiment")
+	void StopExperimentRecording();
+
 	void UpdateTargetLocation(const FEntitySnapshot& Snapshot);
 	void UpdateTargetOriginalLocation(const FEntitySnapshot& Snapshot);
 
@@ -53,6 +65,8 @@ private:
 	bool bHasSynchronizedTime = false;
 
 	bool bIsDeadReckoning = false;
+
+	float RecordingStartTime = 0.0f;
 
 	FEntitySnapshot RealTimeServerSnapshot;
 

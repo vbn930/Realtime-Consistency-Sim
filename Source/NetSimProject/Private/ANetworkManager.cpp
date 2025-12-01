@@ -142,12 +142,13 @@ void AANetworkManager::ProcessIncomingPackets()
 			}
 			else if (Snapshot->Header.Type == EPacketType::SNAPSHOT) {
 				// Send original packet for logging
-				Agent->UpdateTargetOriginalLocation(*Snapshot);
+				if (!bIsServer) {
+					Agent->UpdateTargetOriginalLocation(*Snapshot);
+				}
 
 				if (FMath::FRand() < SimulatedPacketLoss)
 				{
 					// Simulate Packet loss
-					UE_LOG(LogTemp, Warning, TEXT("Packet Lost Simulated!"));
 					continue;
 				}
 
