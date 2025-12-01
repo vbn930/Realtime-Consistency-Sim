@@ -18,6 +18,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -35,6 +36,11 @@ public:
 	bool bIsEnablePrediction = false;
 
 	void UpdateTargetLocation(const FEntitySnapshot& Snapshot);
+	void UpdateTargetOriginalLocation(const FEntitySnapshot& Snapshot);
+
+	void AddExperimentDataToBuffer(float CurrentTime, FVector ServerPos, FVector ClientPos,
+		float ServerTime, FVector ServerVel, FVector ClientVel, int AlgoState);
+	void SaveExperimentData();
 
 	float InterpolationDelay = 0.7f;
 
@@ -48,6 +54,9 @@ private:
 
 	bool bIsDeadReckoning = false;
 
+	FEntitySnapshot RealTimeServerSnapshot;
+
 	FEntitySnapshot LastValidSnapshot;
 	TArray<FEntitySnapshot> SnapshotBuffer;
+	TArray<FString> ExperimentDataBuffer;
 };

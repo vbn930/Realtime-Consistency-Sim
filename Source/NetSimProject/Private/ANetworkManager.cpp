@@ -141,7 +141,9 @@ void AANetworkManager::ProcessIncomingPackets()
 				return;
 			}
 			else if (Snapshot->Header.Type == EPacketType::SNAPSHOT) {
-				
+				// Send original packet for logging
+				Agent->UpdateTargetOriginalLocation(*Snapshot);
+
 				if (FMath::FRand() < SimulatedPacketLoss)
 				{
 					// Simulate Packet loss

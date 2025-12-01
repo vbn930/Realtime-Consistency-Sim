@@ -92,6 +92,11 @@ void ANetworkAgent::Tick(float DeltaTime)
 
     SetActorLocation(NewLocation);
     GetCharacterMovement()->Velocity = NewVelocity;
+
+	// Save experiment data
+    int32 AlgoState = GetCurrentAlgorithmState();
+    AddExperimentDataToBuffer(CurrentClientTime, RealTimeServerSnapshot.Position, NewLocation,
+		RealTimeServerSnapshot.ServerTimestamp, RealTimeServerSnapshot.Velocity, NewVelocity, AlgoState);
 }
 
 // Called to bind functionality to input
@@ -140,5 +145,58 @@ void ANetworkAgent::UpdateTargetLocation(const FEntitySnapshot& Snapshot)
     {
         SetActorLocation(Snapshot.Position);
         SnapshotBuffer.Empty();
+    }
+}
+
+void ANetworkAgent::UpdateTargetOriginalLocation(const FEntitySnapshot& Snapshot)
+{
+	RealTimeServerSnapshot = Snapshot;
+}
+
+void ANetworkAgent::AddExperimentDataToBuffer(float CurrentTime, FVector ServerPos, FVector ClientPos, float ServerTime, FVector ServerVel, FVector ClientVel, int AlgoState)
+{
+    float PositionError = FVector::Dist(ServerPos, ClientPos);
+    FString DataLine = FString::Printf(TEXT("%.3f,%.2f,%.2f,%.2f,%.2f,%.4f,%.3f,%.2f,%.2f,%.2f,%.2f,%d"),
+        CurrentTime,
+        ServerPos.X, ServerPos.Y,
+        ClientPos.X, ClientPos.Y,
+        PositionError,
+        ServerTime,
+        ServerVel.X, ServerVel.Y,
+        ClientVel.X, ClientVel.Y,
+        AlgoState
+    );
+
+    ExperimentDataBuffer.Add(DataLine);
+}
+
+void ANetworkAgent::SaveExperimentData()
+{
+    if (ExperimentDataBuffer.Num() == 0) return;
+
+    // 1. CSV 헤더 만들기 (엑셀 맨 윗줄)
+    FString FinalOutput = TEXT("Time,ServerX,ServerY,ClientX,ClientY,Error,ServerTime,ServerVelX,ServerVelY,ClientVelX,ClientVelY,State\n");
+
+    // 2. 버퍼 내용을 하나의 긴 문자열로 합치기
+    for (const FString& Line : ExperimentDataBuffer)
+    {
+        FinalOutput += Line + TEXT("\n"); // 줄바꿈 추가
+    }
+
+    // 3. 파일명 생성 (날짜_시간.csv) -> 덮어쓰기 방지
+    FString FileName = FString::Printf(TEXT("Experiment_%s.csv"), *FDateTime::Now().ToString(TEXT("%Y%m%d_%H%M%S")));
+
+    // 4. 저장 경로: 프로젝트폴더/Saved/Logs/ 안에 저장
+    FString FilePath = FPaths::ProjectSavedDir() + "Logs/" + FileName;
+
+    // 5. 실제 쓰기 수행
+    if (FFileHelper::SaveStringToFile(FinalOutput, *FilePath))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("=== Experiment Data Saved: %s ==="), *FilePath);
+        UE_LOG(LogTemp, Warning, TEXT("Total Frames Recorded: %d"), ExperimentDataBuffer.Num());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to save file!"));
     }
 }
