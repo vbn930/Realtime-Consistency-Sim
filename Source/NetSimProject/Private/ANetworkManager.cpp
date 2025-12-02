@@ -12,6 +12,12 @@ void AANetworkManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		PC->ConsoleCommand(TEXT("t.UseLessCPUInBackground 0"));
+		PC->ConsoleCommand(TEXT("t.MaxFPS 144"));
+	}
+
 	//Mocking dedicated server
 	FString Mode;
 	UWorld* World = GetWorld();
