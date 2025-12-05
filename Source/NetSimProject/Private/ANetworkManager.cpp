@@ -12,12 +12,6 @@ void AANetworkManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
-	{
-		PC->ConsoleCommand(TEXT("t.UseLessCPUInBackground 0"));
-		PC->ConsoleCommand(TEXT("t.MaxFPS 144"));
-	}
-
 	//Mocking dedicated server
 	FString Mode;
 	UWorld* World = GetWorld();
@@ -226,6 +220,25 @@ bool AANetworkManager::IsSocketEnabled()
 	return false;
 }
 
+void AANetworkManager::ForceUnstuckAgent()
+{
+	if (!Agent) return;
+
+	FVector MapCenter = FVector(0.0f, 0.0f, 300.0f);
+	FVector TeleportPos = MapCenter;
+
+	Agent->SetActorLocation(TeleportPos);
+
+	CurrentPathPoints.Empty();
+	PathPointIndex = 0;
+	PathFindFailCount = 0;
+
+	UE_LOG(LogTemp, Error, TEXT("!!! AGENT UNSTUCK -> TELEPORTED TO MAP CENTER !!!"));
+
+	FEntitySnapshot SnapShot = PacketFactory(EPacketType::SNAPSHOT, TeleportPos, FVector::ZeroVector, GetWorld()->GetTimeSeconds());
+	BroadcastSnapshot(SnapShot);
+}
+
 FEntitySnapshot AANetworkManager::PacketFactory(EPacketType PacketType, FVector Postion, FVector Velocity, float ServerTimestamp)
 {
 	FEntitySnapshot Packet;
@@ -265,13 +278,23 @@ void AANetworkManager::RunServerSimulation(float DeltaTime)
 
 			float Radius = PathfindingRadius;
 			bool isFoundPath = false;
-			while (!isFoundPath) {
-				FNavLocation RandomLocation = GetVaildRandomLocation(CurrentPos, Radius);
-				CalculateNavPath(CurrentPos, RandomLocation);
+			FNavLocation RandomLocation = GetVaildRandomLocation(CurrentPos, Radius);
+			CalculateNavPath(CurrentPos, RandomLocation);
 
-				if (CurrentPathPoints.Num()) {
-					isFoundPath = true;
+			if (CurrentPathPoints.Num() > 0)
+			{
+				isFoundPath = true;
+				PathFindFailCount = 0;
+			}
+			else
+			{
+				PathFindFailCount++;
+				UE_LOG(LogTemp, Warning, TEXT("Pathfinding Failed: %d/5"), PathFindFailCount);
+				if (PathFindFailCount >= 5)
+				{
+					ForceUnstuckAgent();
 				}
+				return;
 			}
 		}
 

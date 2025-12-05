@@ -111,12 +111,16 @@ void ANetworkAgent::Tick(float DeltaTime)
                 {
                     FVector PredictedPos = DRSnapshot.Position + (DRSnapshot.Velocity * TimeSinceLast);
 
-                    NewLocation = FMath::VInterpTo(GetActorLocation(), PredictedPos, DeltaTime, 15.0f);
+                    NewLocation = PredictedPos;
                     NewVelocity = DRSnapshot.Velocity;
                 }
             }
 
-            SetActorLocation(NewLocation);
+            float CorrectionSpeed = 10.0f;
+
+            FVector SmoothedLocation = FMath::VInterpTo(GetActorLocation(), NewLocation, DeltaTime, CorrectionSpeed);
+
+            SetActorLocation(SmoothedLocation);
             GetCharacterMovement()->Velocity = NewVelocity;
         }
     }
@@ -241,12 +245,9 @@ void ANetworkAgent::AddExperimentDataToBuffer(float CurrentTime, FVector ServerP
 void ANetworkAgent::SaveExperimentData()
 {
     if (ExperimentDataBuffer.Num() == 0) return;
-
-    // 1. NetworkManager 찾아서 설정값 가져오기
     float CurrentLatency = 0.0f;
     float CurrentLoss = 0.0f;
 
-    // 월드에 있는 NetworkManager를 찾습니다.
     AANetworkManager* NetMgr = Cast<AANetworkManager>(
         UGameplayStatics::GetActorOfClass(GetWorld(), AANetworkManager::StaticClass())
     );

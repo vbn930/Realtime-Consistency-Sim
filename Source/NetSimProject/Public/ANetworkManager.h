@@ -53,6 +53,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Network Simulation")
 	bool IsSocketEnabled();
 
+	UFUNCTION(BlueprintCallable, Category = "Simulation Control")
+	void ForceUnstuckAgent();
+
 private:
 	FSocket* Socket;
 	uint8 ReceiveBuffer[1024];
@@ -98,6 +101,8 @@ private: // Pathfinding
 	TArray<FVector> CurrentPathPoints;
 
 	int32 PathPointIndex = 0;
+
+	int32 PathFindFailCount = 0;
 
 	void CalculateNavPath(FVector StartPos, FVector EndPos);
 	FNavLocation GetVaildRandomLocation(FVector Origin, float Radius);
