@@ -6,8 +6,8 @@
 [![Network](https://img.shields.io/badge/Network-Custom_UDP-green)]()
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)]()
 
-> **Project Status:** Completed (December 2025)
-> **Domain:** Networked Robotics, Teleoperation, State Estimation, Edge Computing
+> **Project Status:** Completed (December 2025)  
+> **Domain:** Networked Robotics, Teleoperation, State Estimation, Edge Computing  
 > **Key Tech:** UDP Communication, Trajectory Smoothing, Dead Reckoning (Odometry Propagation)
 
 <br>
@@ -15,8 +15,7 @@
 ## Full Research Report
 
 For a detailed analysis of the control stability and error metrics, please refer to the full report below:
-
-[](https://www.google.com/search?q=./Docs/Research_Report.pdf)
+[![Read Full Report](https://img.shields.io/badge/📄_Read_Full_Research_Report_(PDF)-Click_Here-blue?style=for-the-badge)](./Docs/Research_Report.pdf)
 
 -----
 
@@ -45,15 +44,16 @@ The simulation adopts a decoupled **Remote Planner - Local Controller** architec
 ```mermaid
 graph LR
     subgraph Remote ["Remote Planner (Global Authority)"]
-        A[Global Costmap & Pathfinding] -->|State Packet| B(UDP Transmitter)
+        A["Global Costmap & Pathfinding"] -->|State Packet| B("UDP Transmitter")
     end
-    B -.->|Network Latency / Loss| C(UDP Receiver)
+    B -.->|"Network Latency / Loss"| C("UDP Receiver")
     subgraph Robot ["Local Edge Controller (On-board)"]
-        C --> D{Signal Integrity Check}
-        D -- Stable Stream --> E[State Interpolation]
-        D -- Signal Dropout --> F[Odometry Propagation]
-        E --> G[Soft Correction (Filter)]
-        F --> G --> H[Actuator Command / Vis]
+        C --> D{"Signal Integrity Check"}
+        D -- "Stable Stream" --> E["State Interpolation"]
+        D -- "Signal Dropout" --> F["Odometry Propagation"]
+        E --> G["Soft Correction (Filter)"]
+        F --> G
+        G --> H["Actuator Command / Vis"]
     end
 ```
 
