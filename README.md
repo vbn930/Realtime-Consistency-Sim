@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)]()
 
 > **Project Status:** Completed (December 2025)  
-> **Domain:** Distributed Systems, Real-Time Simulation, Game AI, Network Programming  
+> **Domain:** Distributed Systems, Real-Time Simulation, Network Programming  
 > **Key Tech:** Custom UDP Socket, Entity Interpolation, Dead Reckoning (First-Order)
 
 <br>
