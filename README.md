@@ -112,15 +112,5 @@ Experiments were conducted to measure **Tracking Error** and **Motion Continuity
 
 **Dohun Lee**
 
-  * **Affiliation:** DigiPen Institute of Technology (BS in Computer Science)
-  * **Focus:** Robotics Middleware, Real-Time Simulation, Embedded Systems
-  * **Contact:** vbn9302@gmail.com
-
------
-
-## Author
-
-**Dohun Lee**
-
   * **Affiliation:** DigiPen Institute of Technology (BS in Computer Science in Real-Time Interactive Simualtion)
   * **Contact:** vbn9302@gmail.com
