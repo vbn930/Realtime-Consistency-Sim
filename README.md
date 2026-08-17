@@ -1,116 +1,317 @@
-# Robust State Estimation & Remote Control in High-Latency Environments
+# Realtime-Consistency-Sim
 
-### : Fault-Tolerant Teleoperation for AMRs using Hybrid Kinematic Prediction
-[![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.4+-black?logo=unrealengine)](https://www.unrealengine.com/)
-[![Language](https://img.shields.io/badge/C++-17-00599C?logo=cplusplus)](https://isocpp.org/)
-[![Network](https://img.shields.io/badge/Network-Custom_UDP-green)]()
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)]()
+### Networked State Reconstruction Under Latency, Jitter, and Packet Loss
 
-> **Project Status:** Completed (December 2025)  
-> **Domain:** Networked Robotics, Teleoperation, State Estimation, Edge Computing  
-> **Key Tech:** UDP Communication, Trajectory Smoothing, Dead Reckoning (Odometry Propagation)
+![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5-313131?logo=unrealengine&logoColor=white)
+![C++](https://img.shields.io/badge/C++-00599C?logo=cplusplus&logoColor=white)
+![UDP](https://img.shields.io/badge/Networking-Custom_UDP-4B8BBE)
+![Python](https://img.shields.io/badge/Analysis-Python-3776AB?logo=python&logoColor=white)
 
-<br>
+A simulation project for studying how a client can reconstruct a moving agent's state when authoritative updates arrive through an unreliable network.
 
-## Full Research Report
+The project intentionally disables Unreal's built-in actor replication for the simulated agent and implements its own UDP transport, latency/loss injection, snapshot buffering, interpolation, constant-velocity dead reckoning, smooth correction, and CSV experiment logging.
 
-For a detailed analysis of the control stability and error metrics, please refer to the full report below:
-[![Read Full Report](https://img.shields.io/badge/📄_Read_Full_Research_Report_(PDF)-Click_Here-blue?style=for-the-badge)](./Docs/Research_Report.pdf)
+> **Focus:** real-time networking, state reconstruction, simulation, telemetry  
+> **Core stack:** Unreal Engine 5 · C++ · UDP sockets · Python/Pandas/Matplotlib for analysis
 
------
+## Research Report
 
-## Abstract
+A longer write-up of the design and experiments is included in the repository:
 
-This project implements a **fault-tolerant state estimation framework** for remote-controlled Autonomous Mobile Robots (AMRs) operating under unstable network conditions. Utilizing a high-fidelity physics simulation environment (Unreal Engine), I developed a **custom UDP communication layer** to model real-world constraints such as sensor-to-actuator latency, jitter, and stochastic packet loss.
+[**Read the Research Report (PDF)**](./Docs/Research_Report.pdf)
 
-The core contribution is a **Hybrid Prediction Algorithm** that adaptively switches between **Temporal State Interpolation** and **Kinematic Prediction (Dead Reckoning)** based on data stream integrity. Quantitative experiments demonstrate that the local controller maintains kinematic consistency and operational safety even under **300ms latency** and **61% signal loss**, proving its resilience in distributed robotic control systems.
+---
 
------
+## What the System Does
 
-## Simulation & Validation
+The project runs the same agent in two conceptual roles:
 
-The left screen shows the raw sensor feed (discontinuous/stopped), while the right screen shows the locally estimated state (smooth/continuous) using the proposed algorithm.
+- **Server / authoritative simulation**
+  - Generates a path with Unreal's `NavigationSystem`.
+  - Moves the authoritative agent along the path.
+  - Broadcasts position, velocity, and server timestamp snapshots over UDP.
 
-| **Scenario 1: High Latency (300ms)** | **Scenario 2: Critical Signal Loss (60%+)** |
-|:---:|:---:|
-| **State Interpolation** ensures smooth trajectory tracking despite severe signal jitter. | **Kinematic Prediction** maintains control loop stability during communication blackouts. |
-
------
-
-## System Architecture
-
-The simulation adopts a decoupled **Remote Planner - Local Controller** architecture to simulate a realistic teleoperation scenario where the high-level path planning occurs remotely (e.g., Cloud/Server), and low-level execution occurs on the edge (Robot).
+- **Client / reconstructed simulation**
+  - Receives snapshots through a non-blocking UDP socket.
+  - Applies configurable artificial latency, jitter, and packet loss.
+  - Buffers timestamped snapshots.
+  - Interpolates when a usable snapshot pair is available.
+  - Falls back to constant-velocity dead reckoning when the interpolation gap is too large.
+  - Smoothly moves toward the reconstructed position instead of snapping directly.
 
 ```mermaid
-graph LR
-    subgraph Remote ["Remote Planner (Global Authority)"]
-        A["Global Costmap & Pathfinding"] -->|State Packet| B("UDP Transmitter")
-    end
-    B -.->|"Network Latency / Loss"| C("UDP Receiver")
-    subgraph Robot ["Local Edge Controller (On-board)"]
-        C --> D{"Signal Integrity Check"}
-        D -- "Stable Stream" --> E["State Interpolation"]
-        D -- "Signal Dropout" --> F["Odometry Propagation"]
-        E --> G["Soft Correction (Filter)"]
-        F --> G
-        G --> H["Actuator Command / Vis"]
-    end
+flowchart LR
+    A["Unreal NavigationSystem"] --> B["Authoritative Agent"]
+    B --> C["FEntitySnapshot"]
+    C --> D["Custom UDP"]
+    D --> E["Latency / Jitter / Loss Injection"]
+    E --> F["Snapshot Buffer"]
+    F --> G{"Usable snapshot pair?"}
+    G -->|Yes| H["Interpolation"]
+    G -->|No| I["Dead Reckoning"]
+    H --> J["VInterpTo Correction"]
+    I --> J
+    J --> K["Client Agent"]
 ```
 
-### 1\. Communication Layer (Custom UDP)
+---
 
-Instead of relying on high-level engine replication, a raw BSD-socket-based communication manager was implemented to emulate a **Real-Time Control Protocol**.
+## Network Protocol
 
-  * **Protocol:** Custom binary packet structure (`Header` + `KinematicState` + `Timestamp`).
-  * **Environment Modeling:** Programmable **Latency (0-500ms)** and **Packet Loss (0-100%)** injection to simulate degraded radio environments (e.g., WiFi interference, long-range teleoperation).
+The project uses a small packed binary packet representation.
 
-### 2\. Hybrid State Estimation Algorithm
+```cpp
+struct FPacketHeader
+{
+    EPacketType Type;
+    int32 Size;
+};
 
-The local controller employs a Finite State Machine (FSM) to handle incoming state updates and estimate the robot's true position:
+struct FEntitySnapshot
+{
+    FPacketHeader Header;
+    FVector Position;
+    FVector Velocity;
+    float ServerTimestamp;
+};
+```
 
-  * **Mode A: Trajectory Smoothing (Normal Operation)**
-      * Delays execution slightly ($T_{local} = T_{remote} - T_{delay}$) to buffer incoming state packets.
-      * Performs linear interpolation to eliminate control oscillation (jitter) caused by variable network latency.
-  * **Mode B: Kinematic Prediction (Signal Loss Fallback)**
-      * Triggered when the buffer underruns due to packet loss ($Gap > Threshold$).
-      * Extrapolates the robot's future state using the last known velocity and heading ($P_{est} = P_{last} + V \times \Delta t$), effectively acting as a software-based **Odometry Propagation**.
-  * **Reconciliation:** Uses a **Soft Correction Filter** to smoothly blend the estimated state with the authoritative state upon signal recovery, preventing "teleportation" artifacts (sudden position jumps).
+Current packet types include:
 
------
+| Type | Purpose |
+|---|---|
+| `DUMMY` | Registers a client address with the server |
+| `SNAPSHOT` | Transfers authoritative position, velocity, and timestamp |
+| `INPUT` | Declared in the protocol for future use |
 
-## Experimental Analysis
+The socket layer uses Unreal's `FUdpSocketBuilder` in **non-blocking** mode. The server tracks client addresses and broadcasts snapshots with `SendTo`, while clients receive data with `RecvFrom`.
 
-Experiments were conducted to measure **Tracking Error** and **Motion Continuity** under varying network stress.
+---
 
-### 1\. Robustness: Tracking Error Analysis
+## Server-Side Simulation
 
-**Condition:** Latency 110ms / **Packet Loss 61%**
+`AANetworkManager::RunServerSimulation()` drives the authoritative agent.
 
-  * **Observation:** The blue line (Estimated Path) shows occasional deviations when Prediction Mode is active during signal loss.
-  * **Analysis:** Crucially, the error **rapidly converges to zero** immediately after the signal is restored. This proves the system's **Resilience**—the local estimator recovers from drift without permanent desynchronization.
+The current implementation:
 
-### 2\. Availability: Kinematic Consistency
+1. Requests a random navigable target around the agent.
+2. Uses `UNavigationSystemV1::FindPathToLocationSynchronously(...)`.
+3. Stores the returned path points.
+4. Moves toward the current path point at a fixed simulated speed.
+5. Projects movement back onto the navigation surface.
+6. Broadcasts a new `FEntitySnapshot` every simulation tick.
 
-**Condition:** Communication Blackout Intervals
+This project therefore uses **Unreal NavigationSystem-based path generation**. It does **not** implement a custom A* planner.
 
-  * **Observation:** The raw signal (Red Dotted) frequently drops to zero velocity, indicating the robot would stop moving due to command loss.
-  * **Analysis:** The estimated state (Blue Solid) maintains a velocity profile consistent with the remote planner's intent. This proves **Operational Continuity**—the robot continues to function autonomously based on its internal kinematic model even when the link is down.
+If repeated path generation fails, `ForceUnstuckAgent()` resets the agent to the map center and clears path state.
 
------
+---
 
-## Technology Stack
+## Network Impairment Simulation
 
-  * **Simulation Environment:** Unreal Engine 5.4 (Source Build) - *Used as a Physics & Rendering Sandbox*
-  * **Language:** C++17 (Strict memory management with Smart Pointers)
-  * **Communication:** `FSocket` (Low-level UDP implementation for Real-Time Data)
-  * **Control/AI:** Global Path Planning ($A^*$), Navigation Mesh
-  * **Analysis Tools:** Python (Pandas, Matplotlib) for telemetry log parsing
+Network degradation is applied after a snapshot is received by the client-side network manager.
 
------
+### Packet Loss
+
+A snapshot is dropped when:
+
+```text
+random(0, 1) < SimulatedPacketLoss
+```
+
+### Latency and Jitter
+
+Accepted snapshots are placed into a delayed-packet queue.
+
+The current delay model is:
+
+```text
+process_time = current_time + latency + jitter
+jitter ∈ [-0.2 × latency, +0.2 × latency]
+```
+
+This allows the experiment to reproduce irregular packet arrival without relying on Unreal's replication system.
+
+---
+
+## Client-Side State Reconstruction
+
+The main reconstruction logic lives in `ANetworkAgent::Tick()`.
+
+### 1. Initial Time Offset
+
+When the first valid snapshot arrives, the client estimates a server/client clock offset:
+
+```text
+ClientServerTimeDelta = ServerTimestamp - CurrentClientTime
+```
+
+The render target time is then:
+
+```text
+RenderTime = EstimatedServerTime - InterpolationDelay
+```
+
+The current source uses:
+
+```text
+InterpolationDelay = 0.7 seconds
+```
+
+This deliberately renders behind the latest estimated server time so that multiple snapshots are more likely to be available for interpolation.
+
+### 2. Snapshot Buffering
+
+Incoming snapshots are appended to `SnapshotBuffer`.
+
+The current implementation:
+
+- keeps at most **50 snapshots**;
+- tracks `LastValidSnapshot`;
+- assumes snapshots are received in a usable order.
+
+### 3. Interpolation
+
+The client searches for two snapshots that surround `RenderTime`.
+
+When found, position and velocity are linearly interpolated:
+
+```text
+P = Lerp(P0, P1, alpha)
+V = Lerp(V0, V1, alpha)
+```
+
+A snapshot pair is not used for interpolation when its timestamp gap exceeds:
+
+```text
+MaxInterpGap = 0.5 seconds
+```
+
+### 4. Dead Reckoning
+
+If interpolation is unavailable, the client predicts from a previously valid snapshot using a constant-velocity model:
+
+```text
+PredictedPosition =
+    LastPosition + LastVelocity × TimeSinceLastSnapshot
+```
+
+This keeps the reconstructed agent moving through a temporary update gap, but prediction error can grow when the authoritative trajectory changes.
+
+### 5. Smooth Correction
+
+The reconstructed position is applied through Unreal's `FMath::VInterpTo(...)`:
+
+```text
+Current Position
+      ↓
+VInterpTo
+      ↓
+Reconstructed Target
+```
+
+The current correction speed is `10.0f`.
+
+This reduces abrupt visual jumps when the reconstructed state changes.
+
+---
+
+## Experiment Logging
+
+The client can record experiment telemetry directly to CSV.
+
+Recorded fields are:
+
+```text
+Time
+ServerX, ServerY
+ClientX, ClientY
+Error
+ServerTime
+ServerVelX, ServerVelY
+ClientVelX, ClientVelY
+State
+```
+
+Algorithm state values are:
+
+| State | Meaning |
+|---|---|
+| `0` | Prediction disabled |
+| `1` | Interpolation |
+| `2` | Dead reckoning |
+
+Output files are written under Unreal's project `Saved/Logs/` directory with latency, loss, prediction status, and timestamp in the filename.
+
+The resulting CSV files can be analyzed with Python, Pandas, and Matplotlib.
+
+---
+
+## Important Source Files
+
+```text
+Source/NetSimProject/
+├── Public/
+│   ├── ANetworkManager.h      # UDP transport and server simulation interface
+│   ├── NetworkAgent.h         # Client reconstruction / experiment interface
+│   └── NetworkProtocol.h      # Packet definitions
+└── Private/
+    ├── ANetworkManager.cpp    # UDP, latency/loss injection, path simulation
+    ├── NetworkAgent.cpp       # interpolation, dead reckoning, logging
+    └── NetworkProtocol.cpp
+```
+
+---
+
+## Running the Network Roles
+
+The C++ network manager exposes the following methods to Blueprint:
+
+```text
+SetAsServer()
+SetAsClient()
+```
+
+The current source configures:
+
+```text
+Server port: 5000
+Client target: 127.0.0.1:5000
+```
+
+`SetAsClient()` sends a `DUMMY` packet first so the server can record the client's UDP address before broadcasting snapshots.
+
+---
+
+## Current Limitations
+
+This repository is a simulation and state-reconstruction experiment, not a production localization stack.
+
+Important implementation limitations include:
+
+- **Constant-velocity dead reckoning** cannot represent acceleration or complex turns during long outages.
+- Clock synchronization is based on the first received snapshot and does not estimate RTT or clock drift.
+- Snapshot buffers are not explicitly sorted or deduplicated.
+- The artificial delayed-packet queue preserves insertion order rather than reordering by scheduled delivery time.
+- Binary packets are transferred through project-specific packed C++ structs and `reinterpret_cast`, rather than a portable/versioned serialization format.
+- The system has not been integrated with ROS 2 or validated on a physical robot.
+
+---
+
+## Potential Extensions
+
+- ROS 2 publisher/subscriber integration
+- RTT-aware time synchronization
+- Sequence numbers and packet reordering
+- Versioned serialization
+- Higher-order motion prediction
+- Visual odometry or sensor-derived local state
+- Physical robot validation
+
+---
 
 ## Author
 
 **Dohun Lee**
 
-  * **Affiliation:** DigiPen Institute of Technology (BS in Computer Science in Real-Time Interactive Simualtion)
-  * **Contact:** vbn9302@gmail.com
+[GitHub](https://github.com/vbn930)
