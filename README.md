@@ -283,6 +283,12 @@ Client target: 127.0.0.1:5000
 
 ---
 
+## Offline Benchmark
+
+[`benchmark/`](./benchmark) replays the server, the impaired link and the client logic in Python, so reconstruction methods can be compared over a latency × loss grid with repeated seeds. It also tests ping-based clock sync, an adaptive interpolation delay, extrapolation to the estimated present, and a constant-velocity Kalman filter. Results and limits are in [benchmark/README.md](./benchmark/README.md).
+
+---
+
 ## Current Limitations
 
 This repository is a simulation and state-reconstruction experiment, not a production localization stack.
